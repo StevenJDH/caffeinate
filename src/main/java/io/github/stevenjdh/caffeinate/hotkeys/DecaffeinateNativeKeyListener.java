@@ -64,6 +64,7 @@ public class DecaffeinateNativeKeyListener implements NativeKeyListener {
                 break;
             default:
                 hotkeyFlag = 0x00;
+                break;
         }
     }
 
