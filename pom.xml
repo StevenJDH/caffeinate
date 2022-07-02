@@ -18,12 +18,13 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>io.github.stevenjdh</groupId>
     <artifactId>caffeinate</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <name>Caffeinate</name>
+    <description>A simple tool that prevents a computer from entering lock mode while preventing communication apps from switching to the inactive status.</description>
     
     <properties>
         <java.version>11</java.version>
@@ -46,6 +47,11 @@
         <maven-enforcer.version>3.0.0</maven-enforcer.version>
         <maven-gpg.version>3.0.1</maven-gpg.version>
         <gpg.keyname>C4E5B44E</gpg.keyname>
+        <!-- SonarCloud Links -->
+        <sonar.links.homepage>https://github.com/StevenJDH/caffeinate</sonar.links.homepage>
+        <sonar.links.ci>https://github.com/StevenJDH/caffeinate/actions</sonar.links.ci>
+        <sonar.links.issue>https://github.com/StevenJDH/caffeinate/issues</sonar.links.issue>
+        <sonar.links.scm>https://github.com/StevenJDH/caffeinate</sonar.links.scm>
     </properties>
     
     <dependencies>
@@ -67,6 +73,18 @@
     </dependencies>
     
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <configuration>
+                        <goalPrefix>sonar</goalPrefix>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -81,26 +99,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>${maven-shade-plugin.version}</version>
-                <!-- Declaring version with security patches for commons-io. -->
-                <dependencies>
-                    <dependency>
-                        <groupId>commons-io</groupId>
-                        <artifactId>commons-io</artifactId>
-                        <version>2.11.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-shade-plugin</artifactId>
-                        <version>${maven-shade-plugin.version}</version>
-                        <exclusions>
-                            <exclusion>
-                                <!-- Excluding vulnerable 2.6 version. -->
-                                <groupId>commons-io</groupId>
-                                <artifactId>commons-io</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                </dependencies>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -181,17 +179,6 @@
                         <excludeProperty>^git.commit.user.(email|name)$</excludeProperty>
                         <excludeProperty>^git.commit.message.(short|full)$</excludeProperty>
                     </excludeProperties>
-                    <injectAllReactorProjects>true</injectAllReactorProjects>
-                    <validationProperties>
-                        <!-- Verify that the project version does not end with '-SNAPSHOT'. -->
-                        <!-- May need <injectAllReactorProjects> set to 'true' to read POM. -->
-                        <validationProperty>
-                            <name>validating project version</name>
-                            <value>${project.version}</value>
-                            <!-- We could also use: <shouldMatchTo>^[0-9\.]*$</shouldMatchTo> -->
-                            <shouldMatchTo><![CDATA[^.*(?<!-SNAPSHOT)$]]></shouldMatchTo>
-                        </validationProperty>
-                    </validationProperties>
                 </configuration>
             </plugin>
             <plugin>
@@ -226,30 +213,40 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>${maven-gpg.version}</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                        <configuration>
-                            <keyname>${gpg.keyname}</keyname>
-                            <passphraseServerId>${gpg.keyname}</passphraseServerId>
-                            <!-- Prevent gpg from using pinentry programs. -->
-                            <gpgArguments>
-                                <arg>--pinentry-mode</arg>
-                                <arg>loopback</arg>
-                            </gpgArguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
+    
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven-gpg.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <keyname>${gpg.keyname}</keyname>
+                                    <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                                    <!-- Prevent gpg from using pinentry programs. -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     
 </project>
