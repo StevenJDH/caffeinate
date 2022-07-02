@@ -1,6 +1,17 @@
 # Caffeinate
 
+[![build](https://github.com/StevenJDH/caffeinate/actions/workflows/maven-sonar-workflow.yml/badge.svg?branch=main)](https://github.com/StevenJDH/caffeinate/actions/workflows/maven-sonar-workflow.yml)
+![GitHub All Releases](https://img.shields.io/github/downloads/StevenJDH/caffeinate/total)
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/StevenJDH/caffeinate?include_prereleases&logo=github&logoColor=lightgrey)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5cb32221605d48d5b2c746eeff0ff8f2)](https://www.codacy.com/gh/StevenJDH/caffeinate/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=StevenJDH/caffeinate&amp;utm_campaign=Badge_Grade)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=StevenJDH_caffeinate&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=StevenJDH_caffeinate)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=StevenJDH_caffeinate&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=StevenJDH_caffeinate)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=StevenJDH_caffeinate&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=StevenJDH_caffeinate)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=StevenJDH_caffeinate&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=StevenJDH_caffeinate)
+[![Sonar Violations (long format)](https://img.shields.io/sonar/violations/StevenJDH_caffeinate?format=long&server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/dashboard?id=StevenJDH_caffeinate)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=StevenJDH_caffeinate&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=StevenJDH_caffeinate)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=StevenJDH_caffeinate&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=StevenJDH_caffeinate)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=StevenJDH_caffeinate&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=StevenJDH_caffeinate)
 ![Maintenance](https://img.shields.io/maintenance/yes/2022)
 ![GitHub](https://img.shields.io/github/license/StevenJDH/caffeinate)
 
