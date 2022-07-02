@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  This file is part of caffeinate <https://github.com/StevenJDH/caffeinate>.
+  Copyright (C) 2022 Steven Jenkins De Haro.
+ 
+  caffeinate is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+ 
+  caffeinate is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+ 
+  You should have received a copy of the GNU General Public License
+  along with caffeinate.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>io.github.stevenjdh</groupId>
+    <artifactId>caffeinate</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    
+    <properties>
+        <java.version>11</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <encoding>UTF-8</encoding>
+        <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
+        <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
+        <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+        <exec.mainClass>io.github.stevenjdh.caffeinate.CaffeinateApp</exec.mainClass>
+        <!-- Dependency versions -->
+        <jnativehook.version>2.2.2</jnativehook.version>
+        <logback-classic.version>1.3.0-alpha16</logback-classic.version>
+        <jnr-posix.version>3.1.15</jnr-posix.version>
+        <!-- Plugin Versions -->
+        <maven-compiler.version>3.9.0</maven-compiler.version>
+        <maven-shade-plugin.version>3.3.0</maven-shade-plugin.version>
+        <git-commit-id-maven.version>5.0.0</git-commit-id-maven.version>
+        <maven-enforcer.version>3.0.0</maven-enforcer.version>
+        <maven-gpg.version>3.0.1</maven-gpg.version>
+        <gpg.keyname>C4E5B44E</gpg.keyname>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>com.github.kwhat</groupId>
+            <artifactId>jnativehook</artifactId>
+            <version>${jnativehook.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jnr</groupId>
+            <artifactId>jnr-posix</artifactId>
+            <version>${jnr-posix.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback-classic.version}</version>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler.version}</version>
+                <configuration>
+                    <compilerArgument>-Xlint:unchecked</compilerArgument>
+                </configuration>
+            </plugin>
+            <!-- Added to have an Uber JAR and to avoid java.lang.NoClassDefFoundError errors. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>${maven-shade-plugin.version}</version>
+                <!-- Declaring version with security patches for commons-io. -->
+                <dependencies>
+                    <dependency>
+                        <groupId>commons-io</groupId>
+                        <artifactId>commons-io</artifactId>
+                        <version>2.11.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>${maven-shade-plugin.version}</version>
+                        <exclusions>
+                            <exclusion>
+                                <!-- Excluding vulnerable 2.6 version. -->
+                                <groupId>commons-io</groupId>
+                                <artifactId>commons-io</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>com.github.kwhat:jnativehook</include>
+                                    <include>com.github.jnr:*</include>
+                                    <include>org.ow2.asm:*</include>
+                                    <include>org.slf4j:*</include>
+                                    <include>ch.qos.logback:*</include>
+                                </includes>
+                            </artifactSet>
+                            <!-- Ingore accessed denied error when compiling, it's a bug when using minimizeJar.
+                            Tickets: https://issues.apache.org/jira/browse/MSHADE-366 & https://issues.apache.org/jira/browse/MSHADE-400 -->
+                            <minimizeJar>true</minimizeJar>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.MF</exclude>
+                                        <exclude>**/module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>${exec.mainClass}</mainClass>
+                                </transformer>
+                            </transformers>
+                            <!-- Fixes "Project's main artifact is processed through maven-shade-plugin." -->
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <!-- Can be any name that makes sense or it will be "shaded." -->
+                            <shadedClassifierName>bin</shadedClassifierName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>${git-commit-id-maven.version}</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                    <execution>
+                        <id>validate-the-git-infos</id>
+                        <goals>
+                            <goal>validateRevision</goal>
+                        </goals>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <!-- Valid options are 'json' and 'properties'. -->
+                    <format>json</format>
+                    <!-- Set <commitIdGenerationMode> to 'full' not 'flat' if <format> is set to 'json'. -->
+                    <commitIdGenerationMode>full</commitIdGenerationMode>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
+                    <dateFormatTimeZone>UTC</dateFormatTimeZone>
+                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                    <offline>true</offline>
+                    <!-- Using excludeProperties instead of includeOnlyProperties for a smaller list. -->
+                    <excludeProperties>
+                        <excludeProperty>git.user.*</excludeProperty>
+                        <excludeProperty>^git.build.user.(email|name)$</excludeProperty>
+                        <excludeProperty>^git.commit.user.(email|name)$</excludeProperty>
+                        <excludeProperty>^git.commit.message.(short|full)$</excludeProperty>
+                    </excludeProperties>
+                    <injectAllReactorProjects>true</injectAllReactorProjects>
+                    <validationProperties>
+                        <!-- Verify that the project version does not end with '-SNAPSHOT'. -->
+                        <!-- May need <injectAllReactorProjects> set to 'true' to read POM. -->
+                        <validationProperty>
+                            <name>validating project version</name>
+                            <value>${project.version}</value>
+                            <!-- We could also use: <shouldMatchTo>^[0-9\.]*$</shouldMatchTo> -->
+                            <shouldMatchTo><![CDATA[^.*(?<!-SNAPSHOT)$]]></shouldMatchTo>
+                        </validationProperty>
+                    </validationProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven-enforcer.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[11.0,)</version>
+                                </requireJavaVersion>
+                                <requireJavaVendor>
+                                    <level>WARN</level>
+                                    <includes>
+                                        <include>AdoptOpenJDK</include>
+                                        <include>Eclipse Foundation</include>
+                                        <include>Eclipse Adoptium</include>
+                                    </includes>
+                                </requireJavaVendor>
+                                <requireMavenVersion>
+                                    <level>WARN</level>
+                                    <version>[3.8.1,)</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-gpg.version}</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                        <configuration>
+                            <keyname>${gpg.keyname}</keyname>
+                            <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                            <!-- Prevent gpg from using pinentry programs. -->
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
+</project>
