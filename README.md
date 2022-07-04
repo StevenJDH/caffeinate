@@ -26,8 +26,8 @@ Releases: [https://github.com/StevenJDH/caffeinate/releases](https://github.com/
 ## Features
 * Prevents computer from entering lock mode.
 * Prevents inactive status in apps like Teams, Skype, etc.
-* Global hotkey to exit the app (deaffeinated).
-* Supports Windows, macOS, and linux.
+* Global hotkey to exit the app (decaffeinated).
+* Supports Windows, macOS, and Linux.
 
 ## Prerequisites
 * Java 11+ ([Temurin/Adopt](https://adoptium.net)) OpenJDK
