@@ -18,10 +18,12 @@
 
 package io.github.stevenjdh.caffeinate.hotkeys;
 
+import com.github.kwhat.jnativehook.DefaultLibraryLocator;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import jnr.constants.platform.Signal;
 import jnr.posix.POSIXFactory;
@@ -48,6 +50,9 @@ public class DecaffeinateNativeKeyListener implements NativeKeyListener {
         }
         this.executor = executor;
         disableDefaultConsoleExit();
+        // Only works on supported operating systems, not Windows for example.
+        var locator = new DefaultLibraryLocator();
+        locator.getLibraries().forEachRemaining(File::deleteOnExit);
     }
 
     @Override
