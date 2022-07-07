@@ -26,12 +26,12 @@ Releases: [https://github.com/StevenJDH/caffeinate/releases](https://github.com/
 ## Features
 * Prevents computer from entering lock mode.
 * Prevents inactive status in apps like Teams, Skype, etc.
-* Global hotkey to exit the app (decaffeinated).
+* Global hotkey to exit the app (decaffeinate).
 * Supports Windows, macOS, and Linux.
 
 ## Prerequisites
-* Java 11+ ([Temurin/Adopt](https://adoptium.net)) OpenJDK
-* [Maven](https://maven.apache.org) 3.8.1+ CLI
+* Java 11+ ([Temurin/Adopt](https://adoptium.net)) OpenJDK.
+* Optional: [Maven](https://maven.apache.org) 3.8.1+ CLI for compiling.
 
 ## Usage
 Just open the tool either by clicking on the file directly, or through the console with the `java -jar caffeinate-1.0-bin.jar` command. After, there should be a message that says `caffeinating` to indicate the app is working. To exit properly, use the global hotkey combination `Ctrl` + `X` + `C`.
