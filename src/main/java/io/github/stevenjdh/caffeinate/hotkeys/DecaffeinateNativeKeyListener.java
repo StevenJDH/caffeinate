@@ -39,7 +39,8 @@ public class DecaffeinateNativeKeyListener implements NativeKeyListener {
     private static final short MASK_X    = 1 << 1; // 0010
     private static final short MASK_C    = 1 << 2; // 0100
 
-    private final ExecutorService executor;
+    private boolean exitRequested;
+    private final ExecutorService executor;    
 
     public DecaffeinateNativeKeyListener(ExecutorService executor) {
         try {
@@ -48,6 +49,7 @@ public class DecaffeinateNativeKeyListener implements NativeKeyListener {
             LOG.error("Failed to register the native hook: {}", ex.getMessage());
             System.exit(1);
         }
+        exitRequested = false;
         this.executor = executor;
         disableDefaultConsoleExit();
         // Only works on supported operating systems, not Windows for example.
@@ -75,11 +77,13 @@ public class DecaffeinateNativeKeyListener implements NativeKeyListener {
 
     @Override
     public void nativeKeyReleased(NativeKeyEvent evt) {
-        if (hotkeyFlag != (MASK_CRTL ^ MASK_X ^ MASK_C)) {
+        if (hotkeyFlag != (MASK_CRTL ^ MASK_X ^ MASK_C) || exitRequested) {
             hotkeyFlag = 0x00;
             return;
         }
 
+        exitRequested = true;
+        
         try {
             GlobalScreen.unregisterNativeHook();
         } catch (NativeHookException ex) {
