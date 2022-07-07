@@ -22,7 +22,7 @@
     
     <groupId>io.github.stevenjdh</groupId>
     <artifactId>caffeinate</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Caffeinate</name>
     <description>A simple tool that prevents a computer from entering lock mode while preventing communication apps from switching to the inactive status.</description>
     
