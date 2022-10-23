@@ -31,7 +31,7 @@ Releases: [https://github.com/StevenJDH/caffeinate/releases](https://github.com/
 
 ## Prerequisites
 * Java 11+ ([Temurin/Adopt](https://adoptium.net)) OpenJDK.
-* Optional: [Maven](https://maven.apache.org) 3.8.1+ CLI for compiling.
+* Optional: [Maven](https://maven.apache.org) 3.8.4+ CLI for compiling.
 
 ## Usage
 Just open the tool either by clicking on the file directly, or through the console with the `java -jar caffeinate-1.0-bin.jar` command. After, there should be a message that says `caffeinating` to indicate the app is working. To exit properly, use the global hotkey combination `Ctrl` + `X` + `C`.
